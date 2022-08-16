@@ -19,53 +19,92 @@ env:
   #ARM_CLIENT_SECRET: ${{AWS_ACCESS_KEY_ID}}
   STAGE_NAME: dev
 jobs:
-  terraform_plan:
-    name: 'terraform plan'
+#   terraform_plan:
+#     name: 'terraform plan'
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+#     - name: Setup terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         cli_config_credentials_token: ${{ secrets.AWS_CLIENT_ID }}
+#     - name: terraform init
+#       run: terraform init
+#       working-directory: ${{ env.ROOT_PATH }}
+#     - name: terraform validate
+#       run: terraform validate
+#       working-directory: ${{ env.ROOT_PATH }}
+#     - name: terraform Plan
+#       run: terraform plan
+#       working-directory: ${{ env.ROOT_PATH }}
+#   terraform_apply:
+#     name: 'terraform apply'
+#     needs: [terraform_plan]
+#     runs-on: ubuntu-latest
+#     environment: dev
+#     defaults:
+#       run:
+#         shell: bash
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+#     - name: Setup terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+#     - name: terraform Init
+#       run: terraform init
+#       working-directory: ${{ env.ROOT_PATH }}
+#     - name: terraform Init
+#       run: echo 'var -> ${{inputs.tf_destroy}}'
+#       working-directory: ${{ env.ROOT_PATH }}
+#       #github.ref == 'refs/heads/main' && github.event_name == 'push'
+#     - name: terraform Apply
+#       run: terraform apply -auto-approve
+#       if: ${{inputs.tf_destroy}} == false
+#       working-directory: ${{ env.ROOT_PATH }}
+#     # - name: terraform destroy
+#     #   run: terraform destroy -auto-approve
+#     #   if: ${{inputs.tf_destroy}} == true
+#     #   working-directory: ${{ env.ROOT_PATH }}
+ # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.AWS_CLIENT_ID }}
-    - name: terraform init
-      run: terraform init
-      working-directory: ${{ env.ROOT_PATH }}
-    - name: terraform validate
-      run: terraform validate
-      working-directory: ${{ env.ROOT_PATH }}
-    - name: terraform Plan
-      run: terraform plan
-      working-directory: ${{ env.ROOT_PATH }}
-  terraform_apply:
-    name: 'terraform apply'
-    needs: [terraform_plan]
-    runs-on: ubuntu-latest
-    environment: dev
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-    - name: terraform Init
-      run: terraform init
-      working-directory: ${{ env.ROOT_PATH }}
-    - name: terraform Init
-      run: echo 'var -> ${{inputs.tf_destroy}}'
-      working-directory: ${{ env.ROOT_PATH }}
-      #github.ref == 'refs/heads/main' && github.event_name == 'push'
-    - name: terraform Apply
-      run: terraform apply -auto-approve
-      if: ${{inputs.tf_destroy}} == false
-      working-directory: ${{ env.ROOT_PATH }}
-    # - name: terraform destroy
-    #   run: terraform destroy -auto-approve
-    #   if: ${{inputs.tf_destroy}} == true
-    #   working-directory: ${{ env.ROOT_PATH }}
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Codebase
+        uses: actions/checkout@v2
+        
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+# role-to-assume: arn:aws:iam::779527285137:role/AWSdevopscerttaskrole
+         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         aws-region: us-east-1
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.1.2'
+          
+      - name: terraform init
+        run: terraform init --input=false
+
+      #- name: terraform format
+       # run: terraform fmt -check
+
+      - name: terraform validate
+        run: terraform validate
+              # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+
+       
+      - name: terraform plan
+        run: terraform plan 
+       
+      - name: terraform apply
+        run: terraform apply -auto-approve
    
