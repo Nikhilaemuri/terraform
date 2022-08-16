@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-       '/terraform/aws-s3'
+       '../../terraform/aws-s3'
   pull_request:
     branches:
       - main
@@ -14,7 +14,7 @@ defaults:
   run:
     shell: bash
 env:
-  ROOT_PATH: '/terraform/aws-s3'
+  ROOT_PATH: '../../terraform/aws-s3'
   #ARM_CLIENT_ID: ${{AWS_SECRET_ACCESS_KEY}}
   #ARM_CLIENT_SECRET: ${{AWS_ACCESS_KEY_ID}}
   STAGE_NAME: dev
