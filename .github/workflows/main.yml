@@ -3,21 +3,20 @@ on:
   push:
     branches:
       - main
-    paths:
-       '../../terraform/aws-s3'
+   
   pull_request:
     branches:
       - main
   workflow_dispatch: #this attribute will enable the manual run to the pipeline
 # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-defaults:
-  run:
-    shell: bash
-env:
-  ROOT_PATH: '../../terraform/aws-s3'
-  #ARM_CLIENT_ID: ${{AWS_SECRET_ACCESS_KEY}}
-  #ARM_CLIENT_SECRET: ${{AWS_ACCESS_KEY_ID}}
-  STAGE_NAME: dev
+# defaults:
+#   run:
+#     shell: bash
+# env:
+#   ROOT_PATH: '../../terraform/aws-s3'
+#   #ARM_CLIENT_ID: ${{AWS_SECRET_ACCESS_KEY}}
+#   #ARM_CLIENT_SECRET: ${{AWS_ACCESS_KEY_ID}}
+#   STAGE_NAME: dev
 jobs:
 #   terraform_plan:
 #     name: 'terraform plan'
@@ -79,13 +78,13 @@ jobs:
       - name: Checkout Codebase
         uses: actions/checkout@v2
         
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
 # role-to-assume: arn:aws:iam::779527285137:role/AWSdevopscerttaskrole
-         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         aws-region: us-east-1
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: us-east-1
       - name: setup terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -94,8 +93,8 @@ jobs:
       - name: terraform init
         run: terraform init --input=false
 
-      #- name: terraform format
-       # run: terraform fmt -check
+#       - name: terraform format
+#         run: terraform fmt -check
 
       - name: terraform validate
         run: terraform validate
